@@ -6,11 +6,19 @@ import matplotlib.pyplot as plt
 
 import seaborn as sns
 
+
+
 st.sidebar.title("Whatsapp Chat Analyzer \n Hey eveyone it's me Deepak")
 
 # st.warning("""Idhar kya dekh raha hai ?? 👀\nFile upload karke "Show analysis" pe click kiya ??""")
 
+# st.error("Have you uploaded a file ?")
+# if st.button("Yes I did"):
+#     print("""Sabar karo 🤚 process ho raha hai .........""")
+
+
 text = """Sabar karo 🤚 process ho raha hai ........."""
+
 t = st.empty()
 for i in range(len(text) + 1):
     t.markdown("## %s..." % text[0:i])
@@ -258,3 +266,7 @@ if uploaded_file is not None:
                 ax.pie(emoji_df[1].head(), labels=emoji_df[0].head(), autopct="%0.2f")
 
                 st.pyplot(fig)
+
+
+    else :
+        st.title("""Idhar kya dekh raha hai ?? 👀\nFile upload karke "Show analysis" pe click kiya ??""")
