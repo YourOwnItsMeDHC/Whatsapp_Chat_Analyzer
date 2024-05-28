@@ -41,6 +41,7 @@ if uploaded_file:
         t.markdown("## %s..." % text[0:i])
         time.sleep(0.1)
 
+    text = ""
     t.empty()
     
     # Analysis code starts here
