@@ -4,13 +4,12 @@ import prepocessor, helper
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-st.sidebar.title("Whatsapp Chat Analyzer \n Hey everyone your it's me Deepak")
+st.sidebar.title("Whatsapp Chat Analyzer \n Hey everyone it's me Deepak")
 
 uploaded_file = st.sidebar.file_uploader("Choose a file")
-show_analysis = st.sidebar.button("Show analysis")
 
 # Initial message
-if not uploaded_file or not show_analysis:
+if not uploaded_file:
     text = "Sabar karo 🤚 process ho raha hai ............"
     t = st.empty()
     for i in range(len(text) + 1):
@@ -31,117 +30,119 @@ if uploaded_file:
 
     selected_user = st.sidebar.selectbox("Show analysis with respect to: ", user_list)
 
-    if show_analysis:
-        st.balloons()
-        st.title("👇 Ye raha aapka result tadaa 👇")
+    if not st.sidebar.button("Show analysis"):
+        st.title("""Idhar kya dekh raha hai ?? 👀\nFile upload karke "Show analysis" pe click kiya ??""")
+        st.stop()
 
-        num_messages, words, num_media_messages, num_links = helper.fetch_stats(selected_user, df)
+    # Analysis code starts here
+    st.balloons()
+    st.title("👇👇👇 Ye raha aapka result tadaa 👇👇👇")
 
-        st.title("Top Statistics")
-        col1, col2, col3, col4 = st.columns(4)
+    num_messages, words, num_media_messages, num_links = helper.fetch_stats(selected_user, df)
 
-        with col1:
-            st.header("Total Messages")
-            st.title(num_messages)
+    st.title("Top Statistics")
+    col1, col2, col3, col4 = st.columns(4)
 
-        with col2:
-            st.header("Total Words")
-            st.title(words)
+    with col1:
+        st.header("Total Messages")
+        st.title(num_messages)
 
-        with col3:
-            st.header("Media Shared")
-            st.title(num_media_messages)
+    with col2:
+        st.header("Total Words")
+        st.title(words)
 
-        with col4:
-            st.header("Links Shared")
-            st.title(num_links)
+    with col3:
+        st.header("Media Shared")
+        st.title(num_media_messages)
 
-        st.title("Monthly Timeline")
-        timeline = helper.monthly_timeline(selected_user, df)
+    with col4:
+        st.header("Links Shared")
+        st.title(num_links)
+
+    st.title("Monthly Timeline")
+    timeline = helper.monthly_timeline(selected_user, df)
+    fig, ax = plt.subplots()
+    ax.plot(timeline['time'], timeline['message'], color='red')
+    plt.xticks(rotation='vertical')
+    st.pyplot(fig)
+
+    st.title("Daily Timeline")
+    daily_timeline = helper.daily_timeline(selected_user, df)
+    fig, ax = plt.subplots()
+    ax.plot(daily_timeline['only_date'], daily_timeline['message'], color='gold')
+    plt.xticks(rotation='vertical')
+    st.pyplot(fig)
+
+    st.title('Activity Map ⤵')
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.header("Most busy day")
+        busy_day = helper.week_activity_map(selected_user, df)
         fig, ax = plt.subplots()
-        ax.plot(timeline['time'], timeline['message'], color='red')
+        ax.bar(busy_day.index, busy_day.values, color='purple')
         plt.xticks(rotation='vertical')
         st.pyplot(fig)
 
-        st.title("Daily Timeline")
-        daily_timeline = helper.daily_timeline(selected_user, df)
+    with col2:
+        st.header("Most busy month")
+        busy_month = helper.month_activity_map(selected_user, df)
         fig, ax = plt.subplots()
-        ax.plot(daily_timeline['only_date'], daily_timeline['message'], color='gold')
+        ax.bar(busy_month.index, busy_month.values, color='pink')
         plt.xticks(rotation='vertical')
         st.pyplot(fig)
 
-        st.title('Activity Map ⤵')
+    st.title("Weekly Activity Heat Map")
+    user_heatmap = helper.activity_heatmap(selected_user, df)
+
+    # Debugging: Print heatmap data
+    st.write("Heatmap Data:", user_heatmap)
+
+    # Check for NaN values
+    if user_heatmap.isnull().values.all():
+        st.error("Heatmap data contains all NaN values. Please check the data processing steps.")
+    else:
+        fig, ax = plt.subplots()
+        ax = sns.heatmap(user_heatmap, annot=True, fmt="d", cmap="YlGnBu")
+        st.pyplot(fig)
+
+    if selected_user == "Overall":
+        st.title("Most active user 👇")
+        x, new_df = helper.most_busy_users(df)
+        fig, ax = plt.subplots()
+
         col1, col2 = st.columns(2)
 
         with col1:
-            st.header("Most busy day")
-            busy_day = helper.week_activity_map(selected_user, df)
-            fig, ax = plt.subplots()
-            ax.bar(busy_day.index, busy_day.values, color='purple')
-            plt.xticks(rotation='vertical')
+            ax.bar(x.index, x.values, color="green")
+            plt.xticks(rotation="vertical")
             st.pyplot(fig)
 
         with col2:
-            st.header("Most busy month")
-            busy_month = helper.month_activity_map(selected_user, df)
+            st.dataframe(new_df)
+
+        st.title("Word Cloud")
+        df_wc = helper.create_wordcloud(selected_user, df)
+        fig, ax = plt.subplots()
+        ax.imshow(df_wc)
+        st.pyplot(fig)
+
+        most_common_df = helper.most_common_words(selected_user, df)
+        fig, ax = plt.subplots()
+        ax.barh(most_common_df[0], most_common_df[1])
+        plt.xticks(rotation='vertical')
+        st.title("Most common words")
+        st.pyplot(fig)
+
+        emoji_df = helper.emoji_helper(selected_user, df)
+        st.title("Emoji analysis")
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.dataframe(emoji_df)
+
+        with col2:
             fig, ax = plt.subplots()
-            ax.bar(busy_month.index, busy_month.values, color='pink')
-            plt.xticks(rotation='vertical')
+            ax.pie(emoji_df[1].head(), labels=emoji_df[0].head(), autopct="%0.2f")
             st.pyplot(fig)
-
-        st.title("Weekly Activity Heat Map")
-        user_heatmap = helper.activity_heatmap(selected_user, df)
-
-        # Debugging: Print heatmap data
-        st.write("Heatmap Data:", user_heatmap)
-
-        # Check for NaN values
-        if user_heatmap.isnull().values.all():
-            st.error("Heatmap data contains all NaN values. Please check the data processing steps.")
-        else:
-            fig, ax = plt.subplots()
-            ax = sns.heatmap(user_heatmap, annot=True, fmt="d", cmap="YlGnBu")
-            st.pyplot(fig)
-
-        if selected_user == "Overall":
-            st.title("Most active user 👇")
-            x, new_df = helper.most_busy_users(df)
-            fig, ax = plt.subplots()
-
-            col1, col2 = st.columns(2)
-
-            with col1:
-                ax.bar(x.index, x.values, color="green")
-                plt.xticks(rotation="vertical")
-                st.pyplot(fig)
-
-            with col2:
-                st.dataframe(new_df)
-
-            st.title("Word Cloud")
-            df_wc = helper.create_wordcloud(selected_user, df)
-            fig, ax = plt.subplots()
-            ax.imshow(df_wc)
-            st.pyplot(fig)
-
-            most_common_df = helper.most_common_words(selected_user, df)
-            fig, ax = plt.subplots()
-            ax.barh(most_common_df[0], most_common_df[1])
-            plt.xticks(rotation='vertical')
-            st.title("Most common words")
-            st.pyplot(fig)
-
-            emoji_df = helper.emoji_helper(selected_user, df)
-            st.title("Emoji analysis")
-
-            col1, col2 = st.columns(2)
-
-            with col1:
-                st.dataframe(emoji_df)
-
-            with col2:
-                fig, ax = plt.subplots()
-                ax.pie(emoji_df[1].head(), labels=emoji_df[0].head(), autopct="%0.2f")
-                st.pyplot(fig)
-    else:
-        st.title("""Idhar kya dekh raha hai ?? 👀\nFile upload karke "Show analysis" pe click kiya ??""")
