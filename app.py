@@ -37,19 +37,22 @@ if uploaded_file:
     # Show loading message
     text = "Sabar karo 🤚 process ho raha hai ............"
     t = st.empty()
+
+    display_duration = 5
+    start_time = time.time()
+
     for i in range(len(text) + 1):
         t.markdown("## %s..." % text[0:i])
         time.sleep(0.1)
 
-    if st.title("👇 Ye raha aapka result tadaa 👇") is not None:
-        t.empty()
+    if time.time() - start_time > display_duration:
+        break
+    
+    time.sleep(0.1)
     
     # Analysis code starts here
     st.balloons()
     st.title("👇 Ye raha aapka result tadaa 👇")
-
-    if st.title("👇 Ye raha aapka result tadaa 👇") is not None:
-        t.empty()
         
     num_messages, words, num_media_messages, num_links = helper.fetch_stats(selected_user, df)
 
