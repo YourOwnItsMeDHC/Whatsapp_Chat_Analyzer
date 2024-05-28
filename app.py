@@ -1,28 +1,27 @@
 import streamlit as st
 import time
-
 import prepocessor, helper
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-st.sidebar.title("Whatsapp Chat Analyzer \n Hey eveyone it's me Deepak")
-
-text = """Sabar karo 🤚 process ho raha hai ........."""
-
-t = st.empty()
-for i in range(len(text) + 1):
-    t.markdown("## %s..." % text[0:i])
-    time.sleep(0.1)
-text = """"""
+st.sidebar.title("Whatsapp Chat Analyzer \n Hey everyone your it's me Deepak")
 
 uploaded_file = st.sidebar.file_uploader("Choose a file")
+show_analysis = st.sidebar.button("Show analysis")
 
-if uploaded_file is not None:
+# Initial message
+if not uploaded_file or not show_analysis:
+    text = "Sabar karo 🤚 process ho raha hai ............"
+    t = st.empty()
+    for i in range(len(text) + 1):
+        t.markdown("## %s..." % text[0:i])
+        time.sleep(0.1)
+    st.stop()
 
+if uploaded_file:
     st.balloons()
     bytes_data = uploaded_file.getvalue()
     data = bytes_data.decode("utf-8")
-
     df = prepocessor.preprocess(data)
 
     user_list = df['user'].unique().tolist()
@@ -30,11 +29,11 @@ if uploaded_file is not None:
     user_list.sort()
     user_list.insert(0, "Overall")
 
-    selected_user = st.sidebar.selectbox("Show analysis with respect to : ", user_list)
+    selected_user = st.sidebar.selectbox("Show analysis with respect to: ", user_list)
 
-    if st.sidebar.button("Show analysis"):
+    if show_analysis:
         st.balloons()
-        st.title("👇👇👇 Ye raha aapka result tadaa 👇👇👇")
+        st.title("👇 Ye raha aapka result tadaa 👇")
 
         num_messages, words, num_media_messages, num_links = helper.fetch_stats(selected_user, df)
 
@@ -133,7 +132,7 @@ if uploaded_file is not None:
             st.pyplot(fig)
 
             emoji_df = helper.emoji_helper(selected_user, df)
-            st.title("Emoji analsis")
+            st.title("Emoji analysis")
 
             col1, col2 = st.columns(2)
 
