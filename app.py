@@ -36,7 +36,7 @@ if uploaded_file:
 
     # Analysis code starts here
     st.balloons()
-    st.title("👇👇👇 Ye raha aapka result tadaa 👇👇👇")
+    st.title("👇 Ye raha aapka result tadaa 👇")
 
     num_messages, words, num_media_messages, num_links = helper.fetch_stats(selected_user, df)
 
