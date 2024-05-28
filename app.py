@@ -50,6 +50,8 @@ if uploaded_file:
     
     time.sleep(0.1)
     
+    t.empty()
+    
     # Analysis code starts here
     st.balloons()
     st.title("👇 Ye raha aapka result tadaa 👇")
