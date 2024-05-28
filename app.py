@@ -41,13 +41,16 @@ if uploaded_file:
         t.markdown("## %s..." % text[0:i])
         time.sleep(0.1)
 
-    text = ""
-    t.empty()
+    if st.title("👇 Ye raha aapka result tadaa 👇") is not None:
+        t.empty()
     
     # Analysis code starts here
     st.balloons()
     st.title("👇 Ye raha aapka result tadaa 👇")
 
+    if st.title("👇 Ye raha aapka result tadaa 👇") is not None:
+        t.empty()
+        
     num_messages, words, num_media_messages, num_links = helper.fetch_stats(selected_user, df)
 
     st.title("Top Statistics")
