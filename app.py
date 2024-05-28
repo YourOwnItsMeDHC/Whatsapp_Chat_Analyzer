@@ -4,11 +4,11 @@ import prepocessor, helper
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-st.sidebar.title("Whatsapp Chat Analyzer \n Hey everyone it's me Deepak")
+st.sidebar.title("Whatsapp Chat Analyzer \n Hey everyone your it's me Deepak 😊")
 
 uploaded_file = st.sidebar.file_uploader("Choose a file")
 
-# Initial message
+# Initial message if no file is uploaded
 if not uploaded_file:
     text = "Sabar karo 🤚 process ho raha hai ............"
     t = st.empty()
@@ -33,6 +33,13 @@ if uploaded_file:
     if not st.sidebar.button("Show analysis"):
         st.title("""Idhar kya dekh raha hai ?? 👀\nFile upload karke "Show analysis" pe click kiya ??""")
         st.stop()
+
+    # Show loading message
+    text = "Sabar karo 🤚 process ho raha hai ............"
+    t = st.empty()
+    for i in range(len(text) + 1):
+        t.markdown("## %s..." % text[0:i])
+        time.sleep(0.1)
 
     # Analysis code starts here
     st.balloons()
