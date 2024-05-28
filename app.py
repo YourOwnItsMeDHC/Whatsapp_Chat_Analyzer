@@ -49,6 +49,21 @@ if uploaded_file:
         break
     
     time.sleep(0.1)
+
+    text = "Data processed Bro 💪"
+    t = st.empty()
+
+    display_duration = 5
+    start_time = time.time()
+
+    for i in range(len(text) + 1):
+        t.markdown("## %s..." % text[0:i])
+        time.sleep(0.1)
+
+    if time.time() - start_time > display_duration:
+        break
+    
+    time.sleep(0.1)
     
     t.empty()
     
