@@ -8,18 +8,27 @@ def preprocess(data):
     messages = re.split(pattern, data)[1:]
     dates = re.findall(pattern, data)
 
-
-
     df = pd.DataFrame({'user_message': messages, 'message_date': dates})
 
-    # Convert message_date type explicitly into below format
-    # df['message_date'] = pd.to_datetime(df['message_date'], format='%d/%m/%Y, %H:%M - ')
-    df['message_date'] = pd.to_datetime(df['message_date'], format='%d/%m/%Y, %H:%M')
+    # Print date strings to debug
+    print("Date strings:", df['message_date'].head())
 
+    # Try parsing the dates with the given format
+    try:
+        df['message_date'] = pd.to_datetime(df['message_date'], format='%d/%m/%Y, %H:%M -')
+    except ValueError as e:
+        print(f"Date parsing error: {e}")
+        # Handle the error or try a different format
+        try:
+            df['message_date'] = pd.to_datetime(df['message_date'], format='%d/%m/%Y, %H:%M')
+        except ValueError as e:
+            print(f"Secondary date parsing error: {e}")
+            # If still failing, try to infer the format automatically (slower but robust)
+            df['message_date'] = pd.to_datetime(df['message_date'], errors='coerce')
+            if df['message_date'].isnull().any():
+                print("Some dates couldn't be parsed and will be set as NaT")
 
     df.rename(columns={'message_date': 'date'}, inplace=True)
-
-
 
     users = []
     messages = []
@@ -37,16 +46,11 @@ def preprocess(data):
     df.drop(columns=['user_message'], inplace=True)
 
     df['only_date'] = df['date'].dt.date
-
     df['year'] = df['date'].dt.year
-
     df['month_num'] = df['date'].dt.month
-
     df['month'] = df['date'].dt.month_name()
     df['day'] = df['date'].dt.day
-
     df['day_name'] = df['date'].dt.day_name()
-
     df['hour'] = df['date'].dt.hour
     df['minute'] = df['date'].dt.minute
 
@@ -61,6 +65,5 @@ def preprocess(data):
 
     # With that updated hour [eg : hour-(hour+1)] , create "period" column
     df['period'] = period
-
 
     return df
